@@ -1,5 +1,5 @@
 syntax = "proto3";
-package increment;
+package echo_api;
 
 message EchoRequest {
     string message = 1;
