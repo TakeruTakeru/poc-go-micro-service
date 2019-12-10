@@ -1,6 +1,8 @@
 syntax = "proto3";
 package echo_api;
 
+import "google/api/annotations.proto";
+
 message EchoRequest {
     string message = 1;
 }
@@ -10,6 +12,10 @@ message EchoResponse {
 }
 
 service EchoService {
-    rpc EchoMessage (EchoRequest) 
-        returns (EchoResponse);
+    rpc EchoMessage (EchoRequest) returns (EchoResponse) {
+          option (google.api.http) = {
+            post: "/v1/example/echo"
+            body: "*"
+          };
+        }
 }
