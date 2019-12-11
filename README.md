@@ -23,5 +23,14 @@
 - Make Interface on project root: `protoc --go_out=plugins=grpc:. ./api/*.proto`
 - Make Interface Docs: `protoc --doc_out=html,index.html:./api ./api/*.proto`
 
+- Generate gRPC stub: `protoc -I/usr/local/include -I. -I$GOPATH/src -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --go_out=plugins=grpc:. path/to/your_service.proto`
+
+- Generate reverse-proxy: `protoc -I/usr/local/include -I. -I$GOPATH/src -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --grpc-gateway_out=logtostderr=true:. path/to/your_service.proto`
+
+## Testing REST API
+1. Initiate gRPC Server: `go run cmd/web/gRPC_client/main.go`
+2. Initiate reverse-proxy: `go run cmd/web/restserver/main.go`
+3. Test POST method: `curl -X POST http://localhost:8080/v1/example/echo -d '{"message":"this is test"}'`
+
 ## Directory structure
 [see here](https://github.com/golang-standards/project-layout)
