@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	fileInterface "github.com/TakeruTakeru/poc-go-micro-service/api/echo_api"
+	fileInterface "github.com/TakeruTakeru/poc-go-micro-service/api/fileservice"
 	fileService "github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
@@ -40,9 +40,9 @@ func main() {
 			grpc_logrus.UnaryServerInterceptor(logger, opts...),
 		),
 	)
-	service := fileService.NewEchoService()
+	service := fileService.NewFileService()
 
-	fileInterface.RegisterEchoServiceServer(server, service)
+	fileInterface.RegisterFileServiceServer(server, service)
 
 	if err := server.Serve(listen); err != nil {
 		panic(err)
