@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 
 	"github.com/golang/glog"
@@ -13,7 +14,8 @@ import (
 )
 
 var (
-	echoEndpoint = flag.String("echo_endpoint", "localhost:8080", "endpoint of YourService")
+	port         = flag.String("port", "5555", "listen port")
+	echoEndpoint = flag.String("end_point", "localhost:8080", "endpoint of YourService")
 )
 
 func run() error {
@@ -27,8 +29,8 @@ func run() error {
 	if err != nil {
 		return err
 	}
-
-	return http.ListenAndServe(":5555", mux)
+	fmt.Printf("Server started PORT: %s. Proxy to %s.", *port, *echoEndpoint)
+	return http.ListenAndServe(":"+*port, mux)
 }
 
 func main() {
