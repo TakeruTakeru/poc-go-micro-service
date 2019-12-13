@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	port         = flag.String("port", "5555", "listen port")
-	echoEndpoint = flag.String("end_point", "localhost:8080", "endpoint of YourService")
+	port     = flag.String("port", "5555", "listen port")
+	endpoint = flag.String("end_point", "localhost:8080", "endpoint of YourService")
 )
 
 func run() error {
@@ -25,11 +25,11 @@ func run() error {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
-	err := gw.RegisterFileServiceHandlerFromEndpoint(ctx, mux, *echoEndpoint, opts)
+	err := gw.RegisterFileServiceHandlerFromEndpoint(ctx, mux, *endpoint, opts)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Server started PORT: %s. Proxy to %s.", *port, *echoEndpoint)
+	fmt.Printf("Server started PORT: %s. Proxy to %s.", *port, *endpoint)
 	return http.ListenAndServe(":"+*port, mux)
 }
 
