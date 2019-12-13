@@ -2,4 +2,4 @@ build:
   docker:
     web: Dockerfile
 run:
-  web: main-server; proxy-server -port $PORT
+  web: main-server & proxy-server -port $PORT
