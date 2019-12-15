@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.49.0 // indirect
 	cloud.google.com/go/bigquery v1.3.0 // indirect
 	cloud.google.com/go/pubsub v1.1.0 // indirect
-	cloud.google.com/go/storage v1.4.0 // indirect
+	cloud.google.com/go/storage v1.4.0
 	dmitri.shuralyov.com/gpu/mtl v0.0.0-20191203043605-d42048ed14fd // indirect
 	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
@@ -53,6 +53,7 @@ require (
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	golang.org/x/tools v0.0.0-20191209225234-22774f7dae43 // indirect
 	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
+	google.golang.org/api v0.14.0
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/genproto v0.0.0-20191206224255-0243a4be9c8f
 	google.golang.org/grpc v1.25.1
