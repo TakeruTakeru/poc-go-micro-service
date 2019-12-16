@@ -22,7 +22,7 @@ message File {
     // Common File Object Structure.
     string name = 1;
     int32 size = 2;
-    string uri = 3;
+    string path = 3;
     google.protobuf.Timestamp lastModifiedAt = 4;
     google.protobuf.Timestamp createdAt = 5;
     string creator = 6;

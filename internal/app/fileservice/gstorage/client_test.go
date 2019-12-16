@@ -3,10 +3,17 @@ package gstorage
 import (
 	"context"
 	"testing"
+	"time"
+
+	"github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice/models"
 )
 
 // 環境変数の設定
 // GOOGLE_CLOUD_KEYFILE_JSON="$(< /Users/takeru/go/src/google-app/storage/Application-559d1d1cc0a1.json)"
+
+var (
+	testdir = "test-dir021900"
+)
 
 func TestCreateGoogleStorageClient_正常系(t *testing.T) {
 	conn := createConn()
@@ -25,12 +32,36 @@ func TestCreateGoogleStorageClient_異常系(t *testing.T) {
 	}
 }
 
-func TestCreateDir(t *testing.T) {
+func TestDeleteDir_正常系(t *testing.T) {
 	client, err := createConn().NewClient()
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	err = client.CreateDir("takeru-storage")
+	err = client.DeleteDir(testdir)
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+}
+
+func TestCreateDir_正常系(t *testing.T) {
+	client, err := createConn().NewClient()
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+	err = client.CreateDir(testdir)
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+}
+
+func TestUpload_正常系(t *testing.T) {
+	client, err := createConn().NewClient()
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+	fm, _ := models.NewFile("test-file", 0, testdir+"/"+"test-file", time.Now(), time.Now(), "takeru", "")
+	fm.Data = []byte("test data.\nテストデータ\n")
+	_, err = client.Upload(fm)
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
