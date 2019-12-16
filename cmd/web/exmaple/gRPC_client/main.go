@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 func main() {
 	connection, err := grpc.Dial("localhost:8080", grpc.WithInsecure())
 	if err != nil {
-		log.Fatalln("did not connect: %s", err)
+		log.Fatalf("did not connect: %s", err.Error())
 	}
 	defer connection.Close()
 
@@ -23,8 +24,8 @@ func main() {
 
 	response, err := client.EchoMessage(context, &echoInterface.EchoRequest{Message: "Hello, World"})
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 	}
 
-	log.Printf("Server responsed with: %s", response.GetMessage())
+	fmt.Printf("Server responsed with: %s", response.GetMessage())
 }

@@ -2,6 +2,7 @@ package gstorage
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -18,7 +19,7 @@ type GoogleStorageConnector struct {
 func (gsc *GoogleStorageConnector) NewClient() (client *GoogleStorageClient, err error) {
 	googleClient, err := storage.NewClient(gsc.ctx, option.WithCredentialsJSON([]byte(os.Getenv(gsc.jsonPath))))
 	if err != nil {
-		log.Printf("Failed to create client: %v\n", err)
+		fmt.Printf("Failed to create client: %v\n", err)
 		return nil, err
 	}
 	if gsc.ctx == nil {
