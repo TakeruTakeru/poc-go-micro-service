@@ -8,7 +8,8 @@ type FileHandler interface {
 	CreateDir(string) error
 	DeleteDir(string) error
 	Upload(*models.FileModel) (int, error)
-	Download(string) (int, error)
-	GetList(string) ([]*models.FileModel, error)
-	GetFileInfo(string) (models.FileModel, error)
+	Download(string) (*models.FileModel, error)
+	GetDirList(string) ([]string, error)
+	GetFileList(string) ([]*models.FileModel, error)
+	GetFileInfo(string) (*models.FileModel, error)
 }

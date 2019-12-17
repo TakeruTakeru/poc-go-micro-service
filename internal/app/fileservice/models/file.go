@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	fservice "github.com/TakeruTakeru/poc-go-micro-service/api/fileservice"
 	"github.com/golang/protobuf/ptypes"
 	"time"
@@ -9,6 +10,10 @@ import (
 type FileModel struct {
 	Model *fservice.File
 	Data  []byte
+}
+
+func (fm *FileModel) String() string {
+	return fmt.Sprintf("Name: %s, Size: %d, Path: %s", fm.Model.GetName(), fm.Model.GetSize(), fm.Model.GetPath())
 }
 
 func NewFile(
