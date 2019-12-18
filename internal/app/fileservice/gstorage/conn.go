@@ -12,12 +12,12 @@ import (
 
 type GoogleStorageConnector struct {
 	ctx       context.Context
-	jsonPath  string
+	env       string
 	projectId string
 }
 
 func (gsc *GoogleStorageConnector) NewClient() (client *GoogleStorageClient, err error) {
-	googleClient, err := storage.NewClient(gsc.ctx, option.WithCredentialsJSON([]byte(os.Getenv(gsc.jsonPath))))
+	googleClient, err := storage.NewClient(gsc.ctx, option.WithCredentialsJSON([]byte(os.Getenv(gsc.env))))
 	if err != nil {
 		fmt.Printf("Failed to create client: %v\n", err)
 		return nil, err
@@ -29,10 +29,10 @@ func (gsc *GoogleStorageConnector) NewClient() (client *GoogleStorageClient, err
 	return
 }
 
-func NewGoogleStorageConnector(ctx context.Context, jsonPath string, projectId string) (conn *GoogleStorageConnector) {
+func NewGoogleStorageConnector(ctx context.Context, env string, projectId string) (conn *GoogleStorageConnector) {
 	conn = &GoogleStorageConnector{
 		ctx:       ctx,
-		jsonPath:  jsonPath,
+		env:       env,
 		projectId: projectId,
 	}
 	return

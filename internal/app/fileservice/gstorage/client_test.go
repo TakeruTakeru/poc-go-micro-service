@@ -13,11 +13,14 @@ import (
 // GOOGLE_CLOUD_KEYFILE_JSON="$(< /Users/takeru/go/src/google-app/storage/Application-559d1d1cc0a1.json)"
 
 var (
-	tempBucket   = "takeru-test-tempdir"
-	parmBucket   = "takeru-test-parmanent"
+	tempBucket   = "takeru02-test-tempdir"
+	tempDir      = "testdir"
 	tempObj1     = "temp.txt"
 	tempObj1Body = "test data.\nテストデータ\n"
-	tempObj1Size int
+
+	testDirPath         = tempBucket + "/" + tempDir
+	nestedTestDirPath   = testDirPath + "/" + tempDir
+	uploadCreateDirPath = tempBucket + "/" + tempDir + "/upload"
 )
 
 func TestCreateGoogleStorageClient_正常系(t *testing.T) {
@@ -48,18 +51,54 @@ func TestCreateDir_正常系(t *testing.T) {
 	}
 }
 
+func TestCreateDir_正常系_innerdir(t *testing.T) {
+	client, err := createConn().NewClient()
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+	err = client.CreateDir(testDirPath)
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+}
+
+func TestCreateDir_正常系_innerdir_more_nested(t *testing.T) {
+	client, err := createConn().NewClient()
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+	err = client.CreateDir(nestedTestDirPath)
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+}
+
 func TestUpload_正常系(t *testing.T) {
 	client, err := createConn().NewClient()
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	fm, _ := models.NewFile(tempObj1, 0, tempBucket+"/"+tempObj1, time.Now(), time.Now(), "takeru", "")
+	fm, _ := models.NewFile(tempObj1, 0, tempBucket, time.Now(), time.Now(), "takeru", "")
 	fm.Data = []byte(tempObj1Body)
-	tempObj1Size, err = client.Upload(fm)
+	size, err := client.Upload(fm)
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	fmt.Printf("Upload temp file. size: %d\n", tempObj1Size)
+	fmt.Printf("Upload temp file. size: %d\n", size)
+}
+
+func TestUpload_正常系_nested_createdir(t *testing.T) {
+	client, err := createConn().NewClient()
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+	fm, _ := models.NewFile(tempObj1, 0, uploadCreateDirPath, time.Now(), time.Now(), "takeru", "")
+	fm.Data = []byte("")
+	size, err := client.Upload(fm)
+	if err != nil {
+		t.Errorf(unexpectedError(err.Error()))
+	}
+	fmt.Printf("Upload temp file. size: %d\n", size)
 }
 
 func TestDownload_正常系(t *testing.T) {
@@ -83,7 +122,7 @@ func TestGetDirList_正常系(t *testing.T) {
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	dirs, err := client.GetDirList("")
+	dirs, err := client.GetBucketList("")
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
@@ -111,7 +150,7 @@ func TestGetFileInfo_正常系(t *testing.T) {
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	fmt.Printf("Get file detail info: %v", fm)
+	fmt.Printf("Get file detail info: %v\n", fm)
 }
 
 func TestDelete_正常系(t *testing.T) {
@@ -125,16 +164,16 @@ func TestDelete_正常系(t *testing.T) {
 	}
 }
 
-func TestDeleteDir_正常系(t *testing.T) {
-	client, err := createConn().NewClient()
-	if err != nil {
-		t.Errorf(unexpectedError(err.Error()))
-	}
-	err = client.DeleteDir(tempBucket)
-	if err != nil {
-		t.Errorf(unexpectedError(err.Error()))
-	}
-}
+// func TestDeleteDir_正常系(t *testing.T) {
+// 	client, err := createConn().NewClient()
+// 	if err != nil {
+// 		t.Errorf(unexpectedError(err.Error()))
+// 	}
+// 	err = client.DeleteDir(tempBucket)
+// 	if err != nil {
+// 		t.Errorf(unexpectedError(err.Error()))
+// 	}
+// }
 
 func createConn() *GoogleStorageConnector {
 	ctx := context.Background()

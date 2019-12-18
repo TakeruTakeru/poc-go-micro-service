@@ -1,14 +1,15 @@
 package gstorage
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
+	"strings"
+
+	"cloud.google.com/go/storage"
 	"github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice/models"
 	"google.golang.org/api/iterator"
-	"io/ioutil"
-	"log"
-	"path/filepath"
 )
 
 type GoogleStorageClient struct {
@@ -17,23 +18,29 @@ type GoogleStorageClient struct {
 	client    *storage.Client
 }
 
-func (gsc *GoogleStorageClient) CreateDir(dir string) error {
-	bucket := gsc.client.Bucket(dir)
-	if gsc.ctx == nil {
-		log.Fatalf("client: %v", gsc.ctx)
+//param dir is almost same as mkdir -p dir.
+//for exmaple, param:dir is constructed with /<bucket_name>/<dir>/<dir>
+func (gsc *GoogleStorageClient) CreateDir(dir string) (err error) {
+	bname, fname := gsc.separateBucketNameAndFileName(dir)
+	bucket := gsc.client.Bucket(bname)
+	if fname != "" {
+		obj := bucket.Object(fname + "/")
+		w := obj.NewWriter(gsc.ctx)
+		if err = w.Close(); err != nil {
+			fmt.Printf("Failed to close object: %v\n", err)
+			return
+		}
+		return
 	}
-	if err := bucket.Create(gsc.ctx, gsc.projectId, nil); err != nil {
+	if err = bucket.Create(gsc.ctx, gsc.projectId, nil); err != nil {
 		fmt.Printf("Failed to create bucket: %v\n", err)
-		return err
+		return
 	}
-	return nil
+	return
 }
 
 func (gsc *GoogleStorageClient) DeleteDir(dir string) error {
 	bucket := gsc.client.Bucket(dir)
-	if gsc.ctx == nil {
-		log.Fatalf("client: %v", gsc.ctx)
-	}
 	if err := bucket.Delete(gsc.ctx); err != nil {
 		fmt.Printf("Failed to delete bucket: %v\n", err)
 		return err
@@ -42,8 +49,13 @@ func (gsc *GoogleStorageClient) DeleteDir(dir string) error {
 }
 
 func (gsc *GoogleStorageClient) Upload(fm *models.FileModel) (size int, err error) {
-	bucket := gsc.client.Bucket(filepath.Dir(fm.Model.GetPath()))
-	obj := bucket.Object(fm.Model.GetName())
+	bname, fname := gsc.separateBucketNameAndFileName(fm.Model.GetPath())
+	bucket := gsc.client.Bucket(bname)
+	objname := fm.Model.GetName()
+	if fname != "" {
+		objname = fname + "/" + objname
+	}
+	obj := bucket.Object(objname)
 	w := obj.NewWriter(gsc.ctx)
 	if size, err = fmt.Fprintf(w, string(fm.Data)); err != nil {
 		fmt.Printf("Failed to write object: %v\n", err)
@@ -80,7 +92,7 @@ func (gsc *GoogleStorageClient) Download(path string) (fm *models.FileModel, err
 	return
 }
 
-func (gsc *GoogleStorageClient) GetDirList(path string) (dirs []string, err error) {
+func (gsc *GoogleStorageClient) GetBucketList(path string) (dirs []string, err error) {
 	var battrs *storage.BucketAttrs
 	var iterr error
 
@@ -127,6 +139,23 @@ func (gsc *GoogleStorageClient) GetFileInfo(path string) (fm *models.FileModel, 
 		return
 	}
 	fm, err = models.NewFile(attr.Name, int32(attr.Size), path, attr.Updated, attr.Created, attr.Owner, "")
+	return
+}
+
+func (gsc *GoogleStorageClient) separateBucketNameAndFileName(path string) (bname string, fname string) {
+	elem := strings.Split(path, "/")
+	if len(elem) > 1 {
+		lastIdx := len(elem) - 1
+		if elem[lastIdx] == "" {
+			lastIdx = lastIdx - 1
+		}
+		bname = elem[0]
+		fname = strings.Join(elem[1:lastIdx+1], "/")
+		return
+	} else {
+		bname = path
+		fname = ""
+	}
 	return
 }
 

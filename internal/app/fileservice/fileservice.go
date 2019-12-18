@@ -9,7 +9,6 @@ type FileHandler interface {
 	DeleteDir(string) error
 	Upload(*models.FileModel) (int, error)
 	Download(string) (*models.FileModel, error)
-	GetDirList(string) ([]string, error)
 	GetFileList(string) ([]*models.FileModel, error)
 	GetFileInfo(string) (*models.FileModel, error)
 }
