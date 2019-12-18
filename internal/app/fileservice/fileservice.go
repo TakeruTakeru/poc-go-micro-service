@@ -6,7 +6,7 @@ import (
 
 type FileHandler interface {
 	CreateDir(string) error
-	DeleteDir(string) error
+	Delete(string) error
 	Upload(*models.FileModel) (int, error)
 	Download(string) (*models.FileModel, error)
 	GetFileList(string) ([]*models.FileModel, error)

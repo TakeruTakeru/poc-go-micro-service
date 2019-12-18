@@ -39,13 +39,23 @@ func (gsc *GoogleStorageClient) CreateDir(dir string) (err error) {
 	return
 }
 
-func (gsc *GoogleStorageClient) DeleteDir(dir string) error {
-	bucket := gsc.client.Bucket(dir)
-	if err := bucket.Delete(gsc.ctx); err != nil {
-		fmt.Printf("Failed to delete bucket: %v\n", err)
-		return err
+func (gsc *GoogleStorageClient) DeleteBucket(bname string) (err error) {
+	bucket := gsc.client.Bucket(bname)
+	fms, err := gsc.GetFileList(bname)
+	if len(fms) > 1 {
+		for i := len(fms) - 1; i > -1; i-- {
+			err = gsc.Delete(fms[i].Model.GetPath() + "/" + fms[i].Model.GetName())
+			if err != nil {
+				fmt.Printf("Failed to delete Object: %v\n", err)
+			}
+		}
 	}
-	return nil
+
+	if err = bucket.Delete(gsc.ctx); err != nil {
+		fmt.Printf("Failed to delete bucket: %v\n", err)
+		return
+	}
+	return
 }
 
 func (gsc *GoogleStorageClient) Upload(fm *models.FileModel) (size int, err error) {
@@ -67,8 +77,9 @@ func (gsc *GoogleStorageClient) Upload(fm *models.FileModel) (size int, err erro
 }
 
 func (gsc *GoogleStorageClient) Delete(path string) (err error) {
-	bucket := gsc.client.Bucket(filepath.Dir(path))
-	fname := filepath.Base(path)
+	bname, fname := gsc.separateBucketNameAndFileName(path)
+	fmt.Println(bname, fname)
+	bucket := gsc.client.Bucket(bname)
 	obj := bucket.Object(fname)
 	err = obj.Delete(gsc.ctx)
 	return
@@ -114,8 +125,12 @@ func (gsc *GoogleStorageClient) GetBucketList(path string) (dirs []string, err e
 func (gsc *GoogleStorageClient) GetFileList(path string) (files []*models.FileModel, err error) {
 	var attrs *storage.ObjectAttrs
 	var iterr error
-	bucket := gsc.client.Bucket(path)
-	it := bucket.Objects(gsc.ctx, nil)
+	bname, fname := gsc.separateBucketNameAndFileName(path)
+	q := &storage.Query{
+		Prefix: fname,
+	}
+	bucket := gsc.client.Bucket(bname)
+	it := bucket.Objects(gsc.ctx, q)
 	for {
 		attrs, iterr = it.Next()
 		if iterr == iterator.Done {

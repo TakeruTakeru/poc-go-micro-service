@@ -134,9 +134,12 @@ func TestGetFileList_正常系(t *testing.T) {
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	fms, err := client.GetFileList(tempBucket)
+	fms, err := client.GetFileList(testDirPath)
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
+	}
+	if len(fms) != 3 {
+		t.Errorf(unexpectedError("length: " + string(len(fms))))
 	}
 	fmt.Printf("Get files list: %v\n", fms)
 }
@@ -164,12 +167,12 @@ func TestDelete_正常系(t *testing.T) {
 	}
 }
 
-// func TestDeleteDir_正常系(t *testing.T) {
+// func TestDeleteBucket_正常系(t *testing.T) {
 // 	client, err := createConn().NewClient()
 // 	if err != nil {
 // 		t.Errorf(unexpectedError(err.Error()))
 // 	}
-// 	err = client.DeleteDir(tempBucket)
+// 	err = client.DeleteBucket(tempBucket)
 // 	if err != nil {
 // 		t.Errorf(unexpectedError(err.Error()))
 // 	}
