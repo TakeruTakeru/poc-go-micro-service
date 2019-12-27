@@ -9,6 +9,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 
 	gw "github.com/TakeruTakeru/poc-go-micro-service/api/fileservice"
 )
@@ -24,7 +25,9 @@ func run() error {
 	defer cancel()
 
 	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithInsecure()}
+	opts := []grpc.DialOption{grpc.WithInsecure(), grpc.WithUnaryInterceptor(
+		ClientIAuthInterceptor(),
+	)}
 	err := gw.RegisterFileServiceHandlerFromEndpoint(ctx, mux, *endpoint, opts)
 	if err != nil {
 		return err
@@ -39,5 +42,26 @@ func main() {
 
 	if err := run(); err != nil {
 		glog.Fatal(err)
+	}
+}
+
+func ClientIAuthInterceptor() grpc.UnaryClientInterceptor {
+	return func(
+		ctx context.Context,
+		method string,
+		req interface{},
+		reply interface{},
+		cc *grpc.ClientConn,
+		invoker grpc.UnaryInvoker,
+		opts ...grpc.CallOption,
+	) (err error) {
+		md, _ := metadata.FromOutgoingContext(ctx)
+		basicAuth, ok := md["grpcgateway-authorization"]
+		if ok {
+			md := metadata.Pairs("token", basicAuth[0])
+			ctx = metadata.NewOutgoingContext(ctx, md)
+			err = invoker(ctx, method, req, reply, cc, opts...)
+		}
+		return
 	}
 }

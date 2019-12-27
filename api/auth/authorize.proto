@@ -1,0 +1,19 @@
+syntax = "proto3";
+package auth;
+
+import "google/protobuf/timestamp.proto";
+
+service AuthorizeService {
+  rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse);
+}
+
+message AuthorizeRequest {
+    string token = 1;
+    google.protobuf.Timestamp expiredAt = 2;
+}
+
+message AuthorizeResponse {
+    bool authorized = 1;
+    google.protobuf.Timestamp expiredAt = 2;
+    string token = 3;
+}
