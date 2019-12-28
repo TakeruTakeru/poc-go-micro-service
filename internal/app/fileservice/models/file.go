@@ -9,7 +9,6 @@ import (
 
 type FileModel struct {
 	Model *fservice.File
-	Data  []byte
 }
 
 func (fm *FileModel) String() string {
@@ -17,7 +16,7 @@ func (fm *FileModel) String() string {
 }
 
 func NewFile(
-	name string, size int32, path string, lastModTime time.Time,
+	name string, size int32, data []byte, path string, lastModTime time.Time,
 	createdTime time.Time, createor string, desc string,
 ) (*FileModel, error) {
 	lastModAt, err := ptypes.TimestampProto(lastModTime)
@@ -31,6 +30,7 @@ func NewFile(
 	base := &fservice.File{
 		Name:           name,
 		Size:           size,
+		Data:           data,
 		Path:           path,
 		LastModifiedAt: lastModAt,
 		CreatedAt:      createdAt,

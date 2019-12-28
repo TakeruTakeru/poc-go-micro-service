@@ -25,10 +25,7 @@ func run() error {
 	defer cancel()
 
 	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithInsecure(), grpc.WithUnaryInterceptor(
-		ClientIAuthInterceptor(),
-	)}
-	err := gw.RegisterFileServiceHandlerFromEndpoint(ctx, mux, *endpoint, opts)
+	err := gw.RegisterFileServiceHandlerFromEndpoint(ctx, mux, *endpoint, []grpc.DialOption{grpc.WithInsecure()})
 	if err != nil {
 		return err
 	}

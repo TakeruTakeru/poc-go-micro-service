@@ -67,7 +67,7 @@ func (gsc *GoogleStorageClient) Upload(fm *models.FileModel) (size int, err erro
 	}
 	obj := bucket.Object(objname)
 	w := obj.NewWriter(gsc.ctx)
-	if size, err = fmt.Fprintf(w, string(fm.Data)); err != nil {
+	if size, err = fmt.Fprintf(w, string(fm.Model.Data)); err != nil {
 		fmt.Printf("Failed to write object: %v\n", err)
 	}
 	if err = w.Close(); err != nil {
@@ -86,8 +86,8 @@ func (gsc *GoogleStorageClient) Delete(path string) (err error) {
 }
 
 func (gsc *GoogleStorageClient) Download(path string) (fm *models.FileModel, err error) {
-	fname := filepath.Base(path)
-	obj := gsc.client.Bucket(filepath.Dir(path)).Object(fname)
+	bname, fname := gsc.separateBucketNameAndFileName(path)
+	obj := gsc.client.Bucket(bname).Object(fname)
 	attr, err := obj.Attrs(gsc.ctx)
 	if err != nil {
 		return
@@ -98,8 +98,7 @@ func (gsc *GoogleStorageClient) Download(path string) (fm *models.FileModel, err
 	}
 	defer rc.Close()
 	data, err := ioutil.ReadAll(rc)
-	fm, _ = models.NewFile(attr.Name, int32(attr.Size), attr.Bucket, attr.Updated, attr.Created, attr.Owner, "")
-	fm.Data = data
+	fm, _ = models.NewFile(attr.Name, int32(attr.Size), data, attr.Bucket, attr.Updated, attr.Created, attr.Owner, "")
 	return
 }
 
@@ -140,7 +139,7 @@ func (gsc *GoogleStorageClient) GetFileList(path string) (files []*models.FileMo
 			err = iterr
 			return
 		}
-		fm, _ := models.NewFile(attrs.Name, int32(attrs.Size), attrs.Bucket, attrs.Updated, attrs.Created, attrs.Owner, "")
+		fm, _ := models.NewFile(attrs.Name, int32(attrs.Size), []byte{}, attrs.Bucket, attrs.Updated, attrs.Created, attrs.Owner, "")
 		files = append(files, fm)
 	}
 	return
@@ -153,7 +152,7 @@ func (gsc *GoogleStorageClient) GetFileInfo(path string) (fm *models.FileModel, 
 	if err != nil {
 		return
 	}
-	fm, err = models.NewFile(attr.Name, int32(attr.Size), path, attr.Updated, attr.Created, attr.Owner, "")
+	fm, err = models.NewFile(attr.Name, int32(attr.Size), []byte{}, path, attr.Updated, attr.Created, attr.Owner, "")
 	return
 }
 

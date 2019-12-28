@@ -78,8 +78,7 @@ func TestUpload_正常系(t *testing.T) {
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	fm, _ := models.NewFile(tempObj1, 0, tempBucket, time.Now(), time.Now(), "takeru", "")
-	fm.Data = []byte(tempObj1Body)
+	fm, _ := models.NewFile(tempObj1, 0, []byte(tempObj1Body), tempBucket, time.Now(), time.Now(), "takeru", "")
 	size, err := client.Upload(fm)
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
@@ -92,8 +91,7 @@ func TestUpload_正常系_nested_createdir(t *testing.T) {
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	fm, _ := models.NewFile(tempObj1, 0, uploadCreateDirPath, time.Now(), time.Now(), "takeru", "")
-	fm.Data = []byte("")
+	fm, _ := models.NewFile(tempObj1, 0, []byte(""), uploadCreateDirPath, time.Now(), time.Now(), "takeru", "")
 	size, err := client.Upload(fm)
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
@@ -110,11 +108,11 @@ func TestDownload_正常系(t *testing.T) {
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	if string(fm.Data) != tempObj1Body {
-		t.Errorf(unexpectedError(string(fm.Data)))
+	if string(fm.Model.Data) != tempObj1Body {
+		t.Errorf(unexpectedError(string(fm.Model.Data)))
 	}
 
-	fmt.Printf("Download temp file. data:\n%s", string(fm.Data))
+	fmt.Printf("Download temp file. data:\n%s", string(fm.Model.Data))
 }
 
 func TestGetDirList_正常系(t *testing.T) {

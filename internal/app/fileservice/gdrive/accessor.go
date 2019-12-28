@@ -7,12 +7,12 @@ import (
 )
 
 func GetFile() (f *models.FileModel, e error) {
-	f, e = models.NewFile("FileName", 1024, "/takeru/private/", time.Now(), time.Now(), "takeru", "love this file")
+	f, e = models.NewFile("FileName", 1024, []byte{}, "/takeru/private/", time.Now(), time.Now(), "takeru", "love this file")
 	return
 }
 
 func GetFileList() (li []*models.FileModel, e error) {
-	f, e := models.NewFile("FileName", 1024, "/takeru/private/", time.Now(), time.Now(), "takeru", "love this file")
+	f, e := models.NewFile("FileName", 1024, []byte{}, "/takeru/private/", time.Now(), time.Now(), "takeru", "love this file")
 	if e != nil {
 		return nil, e
 	}

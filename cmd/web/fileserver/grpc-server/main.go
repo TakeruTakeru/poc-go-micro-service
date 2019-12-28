@@ -44,7 +44,8 @@ func main() {
 		grpc_middleware.WithUnaryServerChain(
 			grpc_ctxtags.UnaryServerInterceptor(grpc_ctxtags.WithFieldExtractor(grpc_ctxtags.CodeGenRequestFieldExtractor)),
 			grpc_logrus.UnaryServerInterceptor(logger, opts...),
-			authUnaryInterceptor(),
+			// 認証、認可の実装が追いつきそうにないのでパス。
+			// authUnaryInterceptor(),
 		),
 	)
 	service := fileService.NewFileService()
@@ -63,7 +64,7 @@ func authUnaryInterceptor() grpc.UnaryServerInterceptor {
 		if !ok {
 			return nil, status.Error(codes.Unauthenticated, "Invalid Request")
 		}
-		connection, err := grpc.Dial("localhost:6565", grpc.WithInsecure())
+		connection, err := grpc.Dial("localhost:3000", grpc.WithInsecure())
 		if err != nil {
 			return nil, status.Error(codes.Internal, "Connection to auth server denied")
 		}

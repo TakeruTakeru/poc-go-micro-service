@@ -69,8 +69,7 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			fmt.Printf("Failed create google api client: %s\n", err)
 		}
-		fm, _ := models.NewFile(f.Name(), 0, "test-dir021900/"+f.Name(), time.Now(), time.Now(), "", "")
-		fm.Data = buf
+		fm, _ := models.NewFile(f.Name(), 0, buf, "test-dir021900/"+f.Name(), time.Now(), time.Now(), "", "")
 		client.Upload(fm)
 
 		if Verbose {

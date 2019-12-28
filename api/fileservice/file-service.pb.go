@@ -30,11 +30,12 @@ type File struct {
 	// Common File Object Structure.
 	Name                 string               `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Size                 int32                `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
-	Path                 string               `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
-	LastModifiedAt       *timestamp.Timestamp `protobuf:"bytes,4,opt,name=lastModifiedAt,proto3" json:"lastModifiedAt,omitempty"`
-	CreatedAt            *timestamp.Timestamp `protobuf:"bytes,5,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
-	Creator              string               `protobuf:"bytes,6,opt,name=creator,proto3" json:"creator,omitempty"`
-	Desc                 string               `protobuf:"bytes,7,opt,name=desc,proto3" json:"desc,omitempty"`
+	Data                 []byte               `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Path                 string               `protobuf:"bytes,4,opt,name=path,proto3" json:"path,omitempty"`
+	LastModifiedAt       *timestamp.Timestamp `protobuf:"bytes,5,opt,name=lastModifiedAt,proto3" json:"lastModifiedAt,omitempty"`
+	CreatedAt            *timestamp.Timestamp `protobuf:"bytes,6,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	Creator              string               `protobuf:"bytes,7,opt,name=creator,proto3" json:"creator,omitempty"`
+	Desc                 string               `protobuf:"bytes,8,opt,name=desc,proto3" json:"desc,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -77,6 +78,13 @@ func (m *File) GetSize() int32 {
 		return m.Size
 	}
 	return 0
+}
+
+func (m *File) GetData() []byte {
+	if m != nil {
+		return m.Data
+	}
+	return nil
 }
 
 func (m *File) GetPath() string {
@@ -200,46 +208,46 @@ func (m *GoogleDriveFileListResponse) GetRequestAt() *timestamp.Timestamp {
 	return nil
 }
 
-type GoogleStrageFileListRequest struct {
+type GoogleStorageFileListRequest struct {
 	Path                 string   `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GoogleStrageFileListRequest) Reset()         { *m = GoogleStrageFileListRequest{} }
-func (m *GoogleStrageFileListRequest) String() string { return proto.CompactTextString(m) }
-func (*GoogleStrageFileListRequest) ProtoMessage()    {}
-func (*GoogleStrageFileListRequest) Descriptor() ([]byte, []int) {
+func (m *GoogleStorageFileListRequest) Reset()         { *m = GoogleStorageFileListRequest{} }
+func (m *GoogleStorageFileListRequest) String() string { return proto.CompactTextString(m) }
+func (*GoogleStorageFileListRequest) ProtoMessage()    {}
+func (*GoogleStorageFileListRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_131fb42dba298879, []int{3}
 }
 
-func (m *GoogleStrageFileListRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GoogleStrageFileListRequest.Unmarshal(m, b)
+func (m *GoogleStorageFileListRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GoogleStorageFileListRequest.Unmarshal(m, b)
 }
-func (m *GoogleStrageFileListRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GoogleStrageFileListRequest.Marshal(b, m, deterministic)
+func (m *GoogleStorageFileListRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GoogleStorageFileListRequest.Marshal(b, m, deterministic)
 }
-func (m *GoogleStrageFileListRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GoogleStrageFileListRequest.Merge(m, src)
+func (m *GoogleStorageFileListRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GoogleStorageFileListRequest.Merge(m, src)
 }
-func (m *GoogleStrageFileListRequest) XXX_Size() int {
-	return xxx_messageInfo_GoogleStrageFileListRequest.Size(m)
+func (m *GoogleStorageFileListRequest) XXX_Size() int {
+	return xxx_messageInfo_GoogleStorageFileListRequest.Size(m)
 }
-func (m *GoogleStrageFileListRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GoogleStrageFileListRequest.DiscardUnknown(m)
+func (m *GoogleStorageFileListRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GoogleStorageFileListRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GoogleStrageFileListRequest proto.InternalMessageInfo
+var xxx_messageInfo_GoogleStorageFileListRequest proto.InternalMessageInfo
 
-func (m *GoogleStrageFileListRequest) GetPath() string {
+func (m *GoogleStorageFileListRequest) GetPath() string {
 	if m != nil {
 		return m.Path
 	}
 	return ""
 }
 
-type GoogleStrageFileListResponse struct {
+type GoogleStorageFileListResponse struct {
 	File                 []*File              `protobuf:"bytes,1,rep,name=file,proto3" json:"file,omitempty"`
 	RequestAt            *timestamp.Timestamp `protobuf:"bytes,2,opt,name=requestAt,proto3" json:"requestAt,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
@@ -247,41 +255,119 @@ type GoogleStrageFileListResponse struct {
 	XXX_sizecache        int32                `json:"-"`
 }
 
-func (m *GoogleStrageFileListResponse) Reset()         { *m = GoogleStrageFileListResponse{} }
-func (m *GoogleStrageFileListResponse) String() string { return proto.CompactTextString(m) }
-func (*GoogleStrageFileListResponse) ProtoMessage()    {}
-func (*GoogleStrageFileListResponse) Descriptor() ([]byte, []int) {
+func (m *GoogleStorageFileListResponse) Reset()         { *m = GoogleStorageFileListResponse{} }
+func (m *GoogleStorageFileListResponse) String() string { return proto.CompactTextString(m) }
+func (*GoogleStorageFileListResponse) ProtoMessage()    {}
+func (*GoogleStorageFileListResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_131fb42dba298879, []int{4}
 }
 
-func (m *GoogleStrageFileListResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GoogleStrageFileListResponse.Unmarshal(m, b)
+func (m *GoogleStorageFileListResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GoogleStorageFileListResponse.Unmarshal(m, b)
 }
-func (m *GoogleStrageFileListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GoogleStrageFileListResponse.Marshal(b, m, deterministic)
+func (m *GoogleStorageFileListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GoogleStorageFileListResponse.Marshal(b, m, deterministic)
 }
-func (m *GoogleStrageFileListResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GoogleStrageFileListResponse.Merge(m, src)
+func (m *GoogleStorageFileListResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GoogleStorageFileListResponse.Merge(m, src)
 }
-func (m *GoogleStrageFileListResponse) XXX_Size() int {
-	return xxx_messageInfo_GoogleStrageFileListResponse.Size(m)
+func (m *GoogleStorageFileListResponse) XXX_Size() int {
+	return xxx_messageInfo_GoogleStorageFileListResponse.Size(m)
 }
-func (m *GoogleStrageFileListResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GoogleStrageFileListResponse.DiscardUnknown(m)
+func (m *GoogleStorageFileListResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GoogleStorageFileListResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GoogleStrageFileListResponse proto.InternalMessageInfo
+var xxx_messageInfo_GoogleStorageFileListResponse proto.InternalMessageInfo
 
-func (m *GoogleStrageFileListResponse) GetFile() []*File {
+func (m *GoogleStorageFileListResponse) GetFile() []*File {
 	if m != nil {
 		return m.File
 	}
 	return nil
 }
 
-func (m *GoogleStrageFileListResponse) GetRequestAt() *timestamp.Timestamp {
+func (m *GoogleStorageFileListResponse) GetRequestAt() *timestamp.Timestamp {
 	if m != nil {
 		return m.RequestAt
+	}
+	return nil
+}
+
+type GoogleStorageFileRequest struct {
+	Base64Id             string   `protobuf:"bytes,1,opt,name=base64Id,proto3" json:"base64Id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GoogleStorageFileRequest) Reset()         { *m = GoogleStorageFileRequest{} }
+func (m *GoogleStorageFileRequest) String() string { return proto.CompactTextString(m) }
+func (*GoogleStorageFileRequest) ProtoMessage()    {}
+func (*GoogleStorageFileRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_131fb42dba298879, []int{5}
+}
+
+func (m *GoogleStorageFileRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GoogleStorageFileRequest.Unmarshal(m, b)
+}
+func (m *GoogleStorageFileRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GoogleStorageFileRequest.Marshal(b, m, deterministic)
+}
+func (m *GoogleStorageFileRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GoogleStorageFileRequest.Merge(m, src)
+}
+func (m *GoogleStorageFileRequest) XXX_Size() int {
+	return xxx_messageInfo_GoogleStorageFileRequest.Size(m)
+}
+func (m *GoogleStorageFileRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GoogleStorageFileRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GoogleStorageFileRequest proto.InternalMessageInfo
+
+func (m *GoogleStorageFileRequest) GetBase64Id() string {
+	if m != nil {
+		return m.Base64Id
+	}
+	return ""
+}
+
+type GoogleStorageFileResponse struct {
+	File                 *File    `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GoogleStorageFileResponse) Reset()         { *m = GoogleStorageFileResponse{} }
+func (m *GoogleStorageFileResponse) String() string { return proto.CompactTextString(m) }
+func (*GoogleStorageFileResponse) ProtoMessage()    {}
+func (*GoogleStorageFileResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_131fb42dba298879, []int{6}
+}
+
+func (m *GoogleStorageFileResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GoogleStorageFileResponse.Unmarshal(m, b)
+}
+func (m *GoogleStorageFileResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GoogleStorageFileResponse.Marshal(b, m, deterministic)
+}
+func (m *GoogleStorageFileResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GoogleStorageFileResponse.Merge(m, src)
+}
+func (m *GoogleStorageFileResponse) XXX_Size() int {
+	return xxx_messageInfo_GoogleStorageFileResponse.Size(m)
+}
+func (m *GoogleStorageFileResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GoogleStorageFileResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GoogleStorageFileResponse proto.InternalMessageInfo
+
+func (m *GoogleStorageFileResponse) GetFile() *File {
+	if m != nil {
+		return m.File
 	}
 	return nil
 }
@@ -290,41 +376,47 @@ func init() {
 	proto.RegisterType((*File)(nil), "fileservice.File")
 	proto.RegisterType((*GoogleDriveFileListRequest)(nil), "fileservice.GoogleDriveFileListRequest")
 	proto.RegisterType((*GoogleDriveFileListResponse)(nil), "fileservice.GoogleDriveFileListResponse")
-	proto.RegisterType((*GoogleStrageFileListRequest)(nil), "fileservice.GoogleStrageFileListRequest")
-	proto.RegisterType((*GoogleStrageFileListResponse)(nil), "fileservice.GoogleStrageFileListResponse")
+	proto.RegisterType((*GoogleStorageFileListRequest)(nil), "fileservice.GoogleStorageFileListRequest")
+	proto.RegisterType((*GoogleStorageFileListResponse)(nil), "fileservice.GoogleStorageFileListResponse")
+	proto.RegisterType((*GoogleStorageFileRequest)(nil), "fileservice.GoogleStorageFileRequest")
+	proto.RegisterType((*GoogleStorageFileResponse)(nil), "fileservice.GoogleStorageFileResponse")
 }
 
 func init() { proto.RegisterFile("api/fileservice/file-service.proto", fileDescriptor_131fb42dba298879) }
 
 var fileDescriptor_131fb42dba298879 = []byte{
-	// 419 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x51, 0xcd, 0x8e, 0xd3, 0x30,
-	0x10, 0x96, 0xdb, 0xb4, 0x55, 0x1d, 0x09, 0x54, 0x23, 0x51, 0x13, 0x2a, 0x11, 0x45, 0x42, 0x84,
-	0x03, 0x09, 0x2d, 0x17, 0xae, 0x45, 0x88, 0x5e, 0xe0, 0x92, 0xf2, 0x02, 0x6e, 0x33, 0x0d, 0x96,
-	0xd2, 0x38, 0xc4, 0x6e, 0x0f, 0x1c, 0x40, 0x42, 0x5c, 0x38, 0xf3, 0x02, 0xbc, 0xd3, 0xbe, 0xc2,
-	0x9e, 0xf7, 0x19, 0x56, 0xb6, 0x9b, 0xfe, 0xac, 0xb2, 0x6a, 0x4f, 0x7b, 0x9b, 0xb1, 0xbf, 0x6f,
-	0xbe, 0xef, 0x9b, 0xc1, 0x01, 0x2b, 0x79, 0xbc, 0xe2, 0x39, 0x48, 0xa8, 0xb6, 0x7c, 0x09, 0xa6,
-	0x7e, 0xb3, 0x6b, 0xa2, 0xb2, 0x12, 0x4a, 0x10, 0xf7, 0xe8, 0xdf, 0x1b, 0x65, 0x42, 0x64, 0x39,
-	0xc4, 0x9a, 0xc7, 0x8a, 0x42, 0x28, 0xa6, 0xb8, 0x28, 0xa4, 0x85, 0x7a, 0x2f, 0x76, 0xbf, 0xa6,
-	0x5b, 0x6c, 0x56, 0xb1, 0xe2, 0x6b, 0x90, 0x8a, 0xad, 0x4b, 0x0b, 0x08, 0x6e, 0x10, 0x76, 0x3e,
-	0xf1, 0x1c, 0x08, 0xc1, 0x4e, 0xc1, 0xd6, 0x40, 0x91, 0x8f, 0xc2, 0x7e, 0x62, 0x6a, 0xfd, 0x26,
-	0xf9, 0x0f, 0xa0, 0x2d, 0x1f, 0x85, 0x9d, 0xc4, 0xd4, 0xfa, 0xad, 0x64, 0xea, 0x1b, 0x6d, 0x5b,
-	0x9c, 0xae, 0xc9, 0x07, 0xfc, 0x28, 0x67, 0x52, 0x7d, 0x11, 0x29, 0x5f, 0x71, 0x48, 0xa7, 0x8a,
-	0x3a, 0x3e, 0x0a, 0xdd, 0x89, 0x17, 0x59, 0xf9, 0xa8, 0x96, 0x8f, 0xbe, 0xd6, 0xf2, 0xc9, 0x1d,
-	0x06, 0x79, 0x8f, 0xfb, 0xcb, 0x0a, 0x98, 0x32, 0xf4, 0xce, 0x59, 0xfa, 0x01, 0x4c, 0x28, 0xee,
-	0x99, 0x46, 0x54, 0xb4, 0x6b, 0x4c, 0xd5, 0xad, 0xf6, 0x9a, 0x82, 0x5c, 0xd2, 0x9e, 0xf5, 0xaa,
-	0xeb, 0xe0, 0x2d, 0xf6, 0x66, 0x66, 0xea, 0xc7, 0x8a, 0x6f, 0x41, 0x47, 0xff, 0xcc, 0xa5, 0x4a,
-	0xe0, 0xfb, 0x06, 0xa4, 0xda, 0xa7, 0x43, 0x87, 0x74, 0xc1, 0x4f, 0xfc, 0xbc, 0x91, 0x21, 0x4b,
-	0x51, 0x48, 0x20, 0x2f, 0xb1, 0xa3, 0xef, 0x41, 0x91, 0xdf, 0x0e, 0xdd, 0xc9, 0x20, 0x3a, 0x3a,
-	0x4e, 0xa4, 0xc1, 0x89, 0xf9, 0xd6, 0xf9, 0x2a, 0x2b, 0x32, 0x55, 0x66, 0xa1, 0x67, 0xf2, 0xed,
-	0xc1, 0xc1, 0xb8, 0xd6, 0x9f, 0xab, 0x8a, 0x65, 0x17, 0x59, 0xfe, 0x85, 0x47, 0xcd, 0x94, 0x07,
-	0xf2, 0x3c, 0xf9, 0xdf, 0xc2, 0xae, 0x1e, 0x34, 0xb7, 0x43, 0xc9, 0x1f, 0x84, 0x9f, 0xce, 0x40,
-	0x35, 0xec, 0x91, 0xbc, 0x3a, 0x51, 0xbf, 0xff, 0x36, 0x5e, 0x78, 0x1e, 0x68, 0xe3, 0x05, 0xc3,
-	0xdf, 0x57, 0xd7, 0xff, 0x5a, 0x03, 0xf2, 0x38, 0xde, 0x8e, 0xe3, 0x2c, 0xd5, 0x98, 0x38, 0xd7,
-	0x5a, 0x7f, 0x11, 0x1e, 0xee, 0x6d, 0x9c, 0xee, 0x86, 0x34, 0x8d, 0x6f, 0xdc, 0xb8, 0xf7, 0xfa,
-	0x02, 0xe4, 0xce, 0xc9, 0x33, 0xe3, 0xe4, 0x09, 0x19, 0x18, 0x27, 0x52, 0x09, 0x8d, 0x32, 0x5e,
-	0x16, 0x5d, 0xb3, 0xc1, 0x77, 0xb7, 0x01, 0x00, 0x00, 0xff, 0xff, 0x15, 0xf2, 0x19, 0x79, 0xf2,
-	0x03, 0x00, 0x00,
+	// 491 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x92, 0xcd, 0x6e, 0xd4, 0x30,
+	0x10, 0xc7, 0xe5, 0xdd, 0xed, 0x97, 0x17, 0x81, 0xd6, 0x20, 0x70, 0x43, 0xab, 0x46, 0x91, 0x16,
+	0x02, 0x12, 0x09, 0x2c, 0xa8, 0xe2, 0xda, 0x0a, 0x51, 0x21, 0xc1, 0x25, 0xe5, 0x05, 0xbc, 0x9b,
+	0xd9, 0xc5, 0x52, 0x36, 0x0e, 0xb1, 0xbb, 0x07, 0x10, 0x08, 0x55, 0x1c, 0xb9, 0xf1, 0x26, 0xbc,
+	0x0a, 0xaf, 0xc0, 0x83, 0x20, 0x8f, 0x93, 0xf4, 0x2b, 0xed, 0xf6, 0xd4, 0xdb, 0x8c, 0xe7, 0xff,
+	0x1f, 0xff, 0xc6, 0x63, 0x1a, 0x88, 0x42, 0xc6, 0x53, 0x99, 0x81, 0x86, 0x72, 0x21, 0x27, 0x80,
+	0xf1, 0xb3, 0x2a, 0x89, 0x8a, 0x52, 0x19, 0xc5, 0xfa, 0xa7, 0xea, 0xde, 0xd6, 0x4c, 0xa9, 0x59,
+	0x06, 0xb1, 0xf5, 0x89, 0x3c, 0x57, 0x46, 0x18, 0xa9, 0x72, 0xed, 0xa4, 0xde, 0x4e, 0x55, 0xc5,
+	0x6c, 0x7c, 0x34, 0x8d, 0x8d, 0x9c, 0x83, 0x36, 0x62, 0x5e, 0x38, 0x41, 0x70, 0xdc, 0xa1, 0xbd,
+	0xb7, 0x32, 0x03, 0xc6, 0x68, 0x2f, 0x17, 0x73, 0xe0, 0xc4, 0x27, 0xe1, 0x46, 0x82, 0xb1, 0x3d,
+	0xd3, 0xf2, 0x0b, 0xf0, 0x8e, 0x4f, 0xc2, 0x95, 0x04, 0x63, 0x7b, 0x96, 0x0a, 0x23, 0x78, 0xd7,
+	0x27, 0xe1, 0xad, 0x04, 0x63, 0x7b, 0x56, 0x08, 0xf3, 0x89, 0xf7, 0x9c, 0xd7, 0xc6, 0x6c, 0x9f,
+	0xde, 0xce, 0x84, 0x36, 0x1f, 0x54, 0x2a, 0xa7, 0x12, 0xd2, 0x3d, 0xc3, 0x57, 0x7c, 0x12, 0xf6,
+	0x47, 0x5e, 0xe4, 0x90, 0xa2, 0x1a, 0x29, 0xfa, 0x58, 0x23, 0x25, 0xe7, 0x1c, 0xec, 0x35, 0xdd,
+	0x98, 0x94, 0x20, 0x0c, 0xda, 0x57, 0x97, 0xda, 0x4f, 0xc4, 0x8c, 0xd3, 0x35, 0x4c, 0x54, 0xc9,
+	0xd7, 0x10, 0xaa, 0x4e, 0x91, 0x1f, 0xf4, 0x84, 0xaf, 0x3b, 0x56, 0x1b, 0x07, 0xcf, 0xa9, 0x77,
+	0x80, 0x5d, 0xdf, 0x94, 0x72, 0x01, 0xf6, 0x39, 0xde, 0x4b, 0x6d, 0x12, 0xf8, 0x7c, 0x04, 0xda,
+	0x34, 0xd3, 0x91, 0x93, 0xe9, 0x82, 0xef, 0xf4, 0x61, 0xab, 0x43, 0x17, 0x2a, 0xd7, 0xc0, 0x86,
+	0xb4, 0x67, 0x77, 0xc4, 0x89, 0xdf, 0x0d, 0xfb, 0xa3, 0x41, 0x74, 0x6a, 0x61, 0x91, 0x15, 0x27,
+	0x58, 0xb6, 0xf3, 0x95, 0xee, 0x92, 0x3d, 0x83, 0x8f, 0xbc, 0x64, 0xbe, 0x46, 0x1c, 0x8c, 0xe8,
+	0x96, 0xbb, 0xff, 0xd0, 0xa8, 0x52, 0xcc, 0xae, 0xc5, 0xfc, 0x83, 0xd0, 0xed, 0x4b, 0x4c, 0x37,
+	0x85, 0xbd, 0x4b, 0xf9, 0x05, 0x82, 0x1a, 0xd9, 0xa3, 0xeb, 0x63, 0xa1, 0x61, 0xf7, 0xd5, 0xbb,
+	0xb4, 0xc2, 0x6e, 0xf2, 0x60, 0x9f, 0x6e, 0xb6, 0xf8, 0x2e, 0x50, 0x93, 0x2b, 0xa8, 0x47, 0x7f,
+	0xba, 0xb4, 0x6f, 0xd3, 0x43, 0x57, 0x62, 0x3f, 0x09, 0xbd, 0x7f, 0x00, 0xa6, 0x65, 0x8d, 0xec,
+	0xf1, 0x99, 0x1e, 0x97, 0x7f, 0x0d, 0x2f, 0x5c, 0x2e, 0x74, 0x90, 0xc1, 0x83, 0xe3, 0xbf, 0xff,
+	0x7e, 0x77, 0x06, 0xec, 0x4e, 0xbc, 0x78, 0x11, 0xcf, 0x52, 0xab, 0x89, 0x33, 0x7b, 0xd7, 0x2f,
+	0x42, 0x79, 0x83, 0x71, 0x6e, 0x31, 0xec, 0x49, 0x4b, 0xff, 0xf6, 0x8d, 0x7b, 0x4f, 0xaf, 0x23,
+	0xad, 0x60, 0x36, 0x11, 0xe6, 0x2e, 0x1b, 0x20, 0x8c, 0x76, 0xaa, 0x06, 0xe7, 0x5e, 0x1b, 0x0e,
+	0x1b, 0x5e, 0xdd, 0xbf, 0xc6, 0x78, 0xb4, 0x4c, 0x56, 0x21, 0x0c, 0x11, 0x61, 0x87, 0x6d, 0x9f,
+	0x41, 0x40, 0x6f, 0xfc, 0xb5, 0xde, 0xfb, 0xb7, 0xf1, 0x2a, 0xfe, 0xa7, 0x97, 0xff, 0x03, 0x00,
+	0x00, 0xff, 0xff, 0xc4, 0x1c, 0xa2, 0xa1, 0x17, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -340,7 +432,8 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type FileServiceClient interface {
 	GetGoogleDriveFileList(ctx context.Context, in *GoogleDriveFileListRequest, opts ...grpc.CallOption) (*GoogleDriveFileListResponse, error)
-	GetGoogleStrageFileList(ctx context.Context, in *GoogleStrageFileListRequest, opts ...grpc.CallOption) (*GoogleStrageFileListResponse, error)
+	GetGoogleStorageFileList(ctx context.Context, in *GoogleStorageFileListRequest, opts ...grpc.CallOption) (*GoogleStorageFileListResponse, error)
+	GetGoogleStorageFile(ctx context.Context, in *GoogleStorageFileRequest, opts ...grpc.CallOption) (*GoogleStorageFileResponse, error)
 }
 
 type fileServiceClient struct {
@@ -360,9 +453,18 @@ func (c *fileServiceClient) GetGoogleDriveFileList(ctx context.Context, in *Goog
 	return out, nil
 }
 
-func (c *fileServiceClient) GetGoogleStrageFileList(ctx context.Context, in *GoogleStrageFileListRequest, opts ...grpc.CallOption) (*GoogleStrageFileListResponse, error) {
-	out := new(GoogleStrageFileListResponse)
-	err := c.cc.Invoke(ctx, "/fileservice.FileService/GetGoogleStrageFileList", in, out, opts...)
+func (c *fileServiceClient) GetGoogleStorageFileList(ctx context.Context, in *GoogleStorageFileListRequest, opts ...grpc.CallOption) (*GoogleStorageFileListResponse, error) {
+	out := new(GoogleStorageFileListResponse)
+	err := c.cc.Invoke(ctx, "/fileservice.FileService/GetGoogleStorageFileList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fileServiceClient) GetGoogleStorageFile(ctx context.Context, in *GoogleStorageFileRequest, opts ...grpc.CallOption) (*GoogleStorageFileResponse, error) {
+	out := new(GoogleStorageFileResponse)
+	err := c.cc.Invoke(ctx, "/fileservice.FileService/GetGoogleStorageFile", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -372,7 +474,8 @@ func (c *fileServiceClient) GetGoogleStrageFileList(ctx context.Context, in *Goo
 // FileServiceServer is the server API for FileService service.
 type FileServiceServer interface {
 	GetGoogleDriveFileList(context.Context, *GoogleDriveFileListRequest) (*GoogleDriveFileListResponse, error)
-	GetGoogleStrageFileList(context.Context, *GoogleStrageFileListRequest) (*GoogleStrageFileListResponse, error)
+	GetGoogleStorageFileList(context.Context, *GoogleStorageFileListRequest) (*GoogleStorageFileListResponse, error)
+	GetGoogleStorageFile(context.Context, *GoogleStorageFileRequest) (*GoogleStorageFileResponse, error)
 }
 
 // UnimplementedFileServiceServer can be embedded to have forward compatible implementations.
@@ -382,8 +485,11 @@ type UnimplementedFileServiceServer struct {
 func (*UnimplementedFileServiceServer) GetGoogleDriveFileList(ctx context.Context, req *GoogleDriveFileListRequest) (*GoogleDriveFileListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGoogleDriveFileList not implemented")
 }
-func (*UnimplementedFileServiceServer) GetGoogleStrageFileList(ctx context.Context, req *GoogleStrageFileListRequest) (*GoogleStrageFileListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoogleStrageFileList not implemented")
+func (*UnimplementedFileServiceServer) GetGoogleStorageFileList(ctx context.Context, req *GoogleStorageFileListRequest) (*GoogleStorageFileListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoogleStorageFileList not implemented")
+}
+func (*UnimplementedFileServiceServer) GetGoogleStorageFile(ctx context.Context, req *GoogleStorageFileRequest) (*GoogleStorageFileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGoogleStorageFile not implemented")
 }
 
 func RegisterFileServiceServer(s *grpc.Server, srv FileServiceServer) {
@@ -408,20 +514,38 @@ func _FileService_GetGoogleDriveFileList_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FileService_GetGoogleStrageFileList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GoogleStrageFileListRequest)
+func _FileService_GetGoogleStorageFileList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoogleStorageFileListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FileServiceServer).GetGoogleStrageFileList(ctx, in)
+		return srv.(FileServiceServer).GetGoogleStorageFileList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/fileservice.FileService/GetGoogleStrageFileList",
+		FullMethod: "/fileservice.FileService/GetGoogleStorageFileList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FileServiceServer).GetGoogleStrageFileList(ctx, req.(*GoogleStrageFileListRequest))
+		return srv.(FileServiceServer).GetGoogleStorageFileList(ctx, req.(*GoogleStorageFileListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FileService_GetGoogleStorageFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GoogleStorageFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FileServiceServer).GetGoogleStorageFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/fileservice.FileService/GetGoogleStorageFile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FileServiceServer).GetGoogleStorageFile(ctx, req.(*GoogleStorageFileRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -435,8 +559,12 @@ var _FileService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _FileService_GetGoogleDriveFileList_Handler,
 		},
 		{
-			MethodName: "GetGoogleStrageFileList",
-			Handler:    _FileService_GetGoogleStrageFileList_Handler,
+			MethodName: "GetGoogleStorageFileList",
+			Handler:    _FileService_GetGoogleStorageFileList_Handler,
+		},
+		{
+			MethodName: "GetGoogleStorageFile",
+			Handler:    _FileService_GetGoogleStorageFile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

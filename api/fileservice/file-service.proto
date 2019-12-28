@@ -11,9 +11,14 @@ service FileService {
       get: "/v1/gdrive/list"
       };
     };
-  rpc GetGoogleStrageFileList(GoogleStrageFileListRequest) returns (GoogleStrageFileListResponse) {
+  rpc GetGoogleStorageFileList(GoogleStorageFileListRequest) returns (GoogleStorageFileListResponse) {
     option (google.api.http) = {
       get: "/v1/gstorage/list"
+    };
+  };
+  rpc GetGoogleStorageFile(GoogleStorageFileRequest) returns (GoogleStorageFileResponse) {
+    option (google.api.http) = {
+      get: "/v1/gstorage/files/{base64Id}"
     };
   };
 }
@@ -22,11 +27,12 @@ message File {
     // Common File Object Structure.
     string name = 1;
     int32 size = 2;
-    string path = 3;
-    google.protobuf.Timestamp lastModifiedAt = 4;
-    google.protobuf.Timestamp createdAt = 5;
-    string creator = 6;
-    string desc = 7;
+    bytes data = 3;
+    string path = 4;
+    google.protobuf.Timestamp lastModifiedAt = 5;
+    google.protobuf.Timestamp createdAt = 6;
+    string creator = 7;
+    string desc = 8;
 }
 
 message GoogleDriveFileListRequest {
@@ -38,10 +44,17 @@ message GoogleDriveFileListResponse {
     google.protobuf.Timestamp requestAt = 2;
 }
 
-message GoogleStrageFileListRequest {
+message GoogleStorageFileListRequest {
     string path = 1;
 }
-message GoogleStrageFileListResponse {
+message GoogleStorageFileListResponse {
     repeated File file = 1;
     google.protobuf.Timestamp requestAt = 2;
+}
+
+message GoogleStorageFileRequest {
+  string base64Id = 1;
+}
+message GoogleStorageFileResponse {
+  File file = 1;
 }
