@@ -91,7 +91,7 @@ func TestUpload_正常系_nested_createdir(t *testing.T) {
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	fm, _ := models.NewFile(tempObj1, 0, []byte(""), uploadCreateDirPath, time.Now(), time.Now(), "takeru", "")
+	fm, _ := models.NewFile(tempObj1, 0, []byte("hogehoge\nテステス🤗\n"), uploadCreateDirPath, time.Now(), time.Now(), "takeru", "")
 	size, err := client.Upload(fm)
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))

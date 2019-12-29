@@ -9,6 +9,7 @@ import (
 	"time"
 
 	auth "github.com/TakeruTakeru/poc-go-micro-service/api/auth"
+	_ "github.com/TakeruTakeru/poc-go-micro-service/pkg/logger"
 	fileInterface "github.com/TakeruTakeru/poc-go-micro-service/api/fileservice"
 	fileService "github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"

@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
+
 	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice/models"
+	logger "github.com/TakeruTakeru/poc-go-micro-service/pkg/logger"
 	"google.golang.org/api/iterator"
 )
 
@@ -27,15 +28,17 @@ func (gsc *GoogleStorageClient) CreateDir(dir string) (err error) {
 		obj := bucket.Object(fname + "/")
 		w := obj.NewWriter(gsc.ctx)
 		if err = w.Close(); err != nil {
-			fmt.Printf("Failed to close object: %v\n", err)
+			logger.Errorf("Failed to close object: %v", err)
 			return
 		}
+		logger.Printf("Created Directory '%s'", fname)
 		return
 	}
 	if err = bucket.Create(gsc.ctx, gsc.projectId, nil); err != nil {
-		fmt.Printf("Failed to create bucket: %v\n", err)
+		logger.Errorf("Failed to create bucket: %v", err)
 		return
 	}
+	logger.Printf("Created bucket '%s'", bname)
 	return
 }
 
@@ -46,15 +49,16 @@ func (gsc *GoogleStorageClient) DeleteBucket(bname string) (err error) {
 		for i := len(fms) - 1; i > -1; i-- {
 			err = gsc.Delete(fms[i].Model.GetPath() + "/" + fms[i].Model.GetName())
 			if err != nil {
-				fmt.Printf("Failed to delete Object: %v\n", err)
+				logger.Errorf("Failed to delete Object: %v", err)
 			}
 		}
 	}
 
 	if err = bucket.Delete(gsc.ctx); err != nil {
-		fmt.Printf("Failed to delete bucket: %v\n", err)
+		logger.Errorf("Failed to delete bucket: %v", err)
 		return
 	}
+	logger.Printf("Delete bucket '%s'", bname)
 	return
 }
 
@@ -68,20 +72,23 @@ func (gsc *GoogleStorageClient) Upload(fm *models.FileModel) (size int, err erro
 	obj := bucket.Object(objname)
 	w := obj.NewWriter(gsc.ctx)
 	if size, err = fmt.Fprintf(w, string(fm.Model.Data)); err != nil {
-		fmt.Printf("Failed to write object: %v\n", err)
+		logger.Errorf("Failed to write object: %v", err)
 	}
 	if err = w.Close(); err != nil {
-		fmt.Printf("Failed to close object: %v\n", err)
+		logger.Errorf("Failed to close object: %v", err)
 	}
+	logger.Printf("Upload file '%s'", objname)
 	return
 }
 
 func (gsc *GoogleStorageClient) Delete(path string) (err error) {
 	bname, fname := gsc.separateBucketNameAndFileName(path)
-	fmt.Println(bname, fname)
 	bucket := gsc.client.Bucket(bname)
 	obj := bucket.Object(fname)
 	err = obj.Delete(gsc.ctx)
+	if err != nil {
+		logger.Errorf("Failed to delete file '%s' in %s bucket %s", fname, bname, err.Error())
+	}
 	return
 }
 
@@ -90,15 +97,18 @@ func (gsc *GoogleStorageClient) Download(path string) (fm *models.FileModel, err
 	obj := gsc.client.Bucket(bname).Object(fname)
 	attr, err := obj.Attrs(gsc.ctx)
 	if err != nil {
+		logger.Errorf("Failed to download file '%s' in %s bucket %s", fname, bname, err.Error())
 		return
 	}
 	rc, err := obj.NewReader(gsc.ctx)
 	if err != nil {
+		logger.Errorf("Failed to download file '%s' in %s bucket %s", fname, bname, err.Error())
 		return
 	}
 	defer rc.Close()
 	data, err := ioutil.ReadAll(rc)
 	fm, _ = models.NewFile(attr.Name, int32(attr.Size), data, attr.Bucket, attr.Updated, attr.Created, attr.Owner, "")
+	logger.Printf("Downloaded file '%s'", fname)
 	return
 }
 
@@ -114,10 +124,12 @@ func (gsc *GoogleStorageClient) GetBucketList(path string) (dirs []string, err e
 		}
 		if iterr != nil {
 			err = iterr
+			logger.Errorf("Failed to GetBucketList %s", err.Error())
 			return
 		}
 		dirs = append(dirs, battrs.Name)
 	}
+	logger.Printf("GetBucketList: '%s'", path)
 	return
 }
 
@@ -137,22 +149,27 @@ func (gsc *GoogleStorageClient) GetFileList(path string) (files []*models.FileMo
 		}
 		if iterr != nil {
 			err = iterr
+			logger.Errorf("Failed to GetFileList %s", err.Error())
 			return
 		}
 		fm, _ := models.NewFile(attrs.Name, int32(attrs.Size), []byte{}, attrs.Bucket, attrs.Updated, attrs.Created, attrs.Owner, "")
 		files = append(files, fm)
 	}
+	logger.Printf("GetFileList: '%s'", path)
 	return
 }
 
 func (gsc *GoogleStorageClient) GetFileInfo(path string) (fm *models.FileModel, err error) {
-	bucket := gsc.client.Bucket(filepath.Dir(path))
-	obj := bucket.Object(filepath.Base(path))
+	bname, fname := gsc.separateBucketNameAndFileName(path)
+	bucket := gsc.client.Bucket(bname)
+	obj := bucket.Object(fname)
 	attr, err := obj.Attrs(gsc.ctx)
 	if err != nil {
+		logger.Errorf("Failed to GetFileInfo bucket: '%s', file: '%s' %s", bname, fname, err.Error())
 		return
 	}
 	fm, err = models.NewFile(attr.Name, int32(attr.Size), []byte{}, path, attr.Updated, attr.Created, attr.Owner, "")
+	logger.Printf("Get File Info file: '%s'", fname)
 	return
 }
 
