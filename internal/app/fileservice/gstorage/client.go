@@ -44,34 +44,30 @@ func (gsc *GoogleStorageClient) CreateDir(dir string) (err error) {
 
 func (gsc *GoogleStorageClient) DeleteBucket(bname string) (err error) {
 	bucket := gsc.client.Bucket(bname)
-	fms, err := gsc.GetFileList(bname)
-	if len(fms) > 1 {
-		for i := len(fms) - 1; i > -1; i-- {
-			err = gsc.Delete(fms[i].Model.GetPath() + "/" + fms[i].Model.GetName())
-			if err != nil {
-				logger.Errorf("Failed to delete Object: %v", err)
-			}
+	paths, err := gsc.GetFileList(bname)
+	if len(paths) > 1 {
+		for _, path := range paths {
+			err = gsc.Delete(path)
 		}
-	}
-
-	if err = bucket.Delete(gsc.ctx); err != nil {
-		logger.Errorf("Failed to delete bucket: %v", err)
-		return
+		if err = bucket.Delete(gsc.ctx); err != nil {
+			logger.Errorf("Failed to delete bucket: %v", err)
+			return
+		}
 	}
 	logger.Printf("Delete bucket '%s'", bname)
 	return
 }
 
 func (gsc *GoogleStorageClient) Upload(fm *models.FileModel) (size int, err error) {
-	bname, fname := gsc.separateBucketNameAndFileName(fm.Model.GetPath())
+	bname, dname := gsc.separateBucketNameAndFileName(fm.GetPath())
 	bucket := gsc.client.Bucket(bname)
-	objname := fm.Model.GetName()
-	if fname != "" {
-		objname = fname + "/" + objname
+	objname := fm.GetName()
+	if dname != "" {
+		objname = dname + "/" + objname
 	}
 	obj := bucket.Object(objname)
 	w := obj.NewWriter(gsc.ctx)
-	if size, err = fmt.Fprintf(w, string(fm.Model.Data)); err != nil {
+	if size, err = fmt.Fprintf(w, string(fm.GetData())); err != nil {
 		logger.Errorf("Failed to write object: %v", err)
 	}
 	if err = w.Close(); err != nil {
@@ -107,7 +103,7 @@ func (gsc *GoogleStorageClient) Download(path string) (fm *models.FileModel, err
 	}
 	defer rc.Close()
 	data, err := ioutil.ReadAll(rc)
-	fm, _ = models.NewFile(attr.Name, int32(attr.Size), data, attr.Bucket, attr.Updated, attr.Created, attr.Owner, "")
+	fm, _ = models.NewFile(attr.Name, int32(attr.Size), data, attr.Name, attr.Updated, attr.Created, attr.Owner, "")
 	logger.Printf("Downloaded file '%s'", fname)
 	return
 }
@@ -133,7 +129,7 @@ func (gsc *GoogleStorageClient) GetBucketList(path string) (dirs []string, err e
 	return
 }
 
-func (gsc *GoogleStorageClient) GetFileList(path string) (files []*models.FileModel, err error) {
+func (gsc *GoogleStorageClient) GetFileList(path string) (files []string, err error) {
 	var attrs *storage.ObjectAttrs
 	var iterr error
 	bname, fname := gsc.separateBucketNameAndFileName(path)
@@ -152,8 +148,8 @@ func (gsc *GoogleStorageClient) GetFileList(path string) (files []*models.FileMo
 			logger.Errorf("Failed to GetFileList %s", err.Error())
 			return
 		}
-		fm, _ := models.NewFile(attrs.Name, int32(attrs.Size), []byte{}, attrs.Bucket, attrs.Updated, attrs.Created, attrs.Owner, "")
-		files = append(files, fm)
+		s := attrs.Name
+		files = append(files, s)
 	}
 	logger.Printf("GetFileList: '%s'", path)
 	return

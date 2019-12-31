@@ -3,10 +3,10 @@ package gstorage
 import (
 	"context"
 	"fmt"
+	_ "github.com/TakeruTakeru/poc-go-micro-service/configs" // Initializing .env
+	"github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice/models"
 	"testing"
 	"time"
-
-	"github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice/models"
 )
 
 // 環境変数の設定
@@ -108,11 +108,11 @@ func TestDownload_正常系(t *testing.T) {
 	if err != nil {
 		t.Errorf(unexpectedError(err.Error()))
 	}
-	if string(fm.Model.Data) != tempObj1Body {
-		t.Errorf(unexpectedError(string(fm.Model.Data)))
+	if string(fm.GetData()) != tempObj1Body {
+		t.Errorf(unexpectedError(string(fm.GetData())))
 	}
 
-	fmt.Printf("Download temp file. data:\n%s", string(fm.Model.Data))
+	fmt.Printf("Download temp file. data:\n%s", string(fm.GetData()))
 }
 
 func TestGetDirList_正常系(t *testing.T) {

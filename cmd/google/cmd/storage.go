@@ -26,8 +26,16 @@ import (
 )
 
 var (
+	Action  string
 	Path    string
 	Verbose bool
+)
+
+const (
+	// READ_COMMAND = "read"
+	UPLOAD_COMMAND   = "upload"
+	DOWNLOAD_COMMAND = "download"
+	// DELETE_COMMAND = "delete"
 )
 
 // storageCmd represents the storage command
@@ -41,46 +49,20 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		f, err := os.Stat(Path)
-		if err != nil {
-			fmt.Println("Invalid Path")
-			os.Exit(1)
-		}
-		fp, err := os.Open(Path)
-		if err != nil {
-			fmt.Println("Failed open")
-			os.Exit(1)
-		}
-		defer fp.Close()
-		buf := make([]byte, 1024)
-		for {
-			n, err := fp.Read(buf)
-			if n == 0 {
-				break
-			}
-			if err != nil {
-				fmt.Printf("Failed read: %s\n", err)
-				os.Exit(1)
-			}
-		}
-		ctx := context.Background()
-		conn := gstorage.NewGoogleStorageConnector(ctx, "GOOGLE_CLOUD_KEYFILE_JSON", "sodium-chalice-256606")
-		client, err := conn.NewClient()
-		if err != nil {
-			fmt.Printf("Failed create google api client: %s\n", err)
-		}
-		fm, _ := models.NewFile(f.Name(), 0, buf, "test-dir021900/"+f.Name(), time.Now(), time.Now(), "", "")
-		client.Upload(fm)
-
-		if Verbose {
-			pwd, _ := os.Getwd()
-			fmt.Printf("pwd: %s\npath: %s\nData:\n %s\n", pwd, Path, string(buf))
+		switch Action {
+		case UPLOAD_COMMAND:
+			upload(args)
+		case DOWNLOAD_COMMAND:
+			download(args)
+		default:
+			panic(fmt.Errorf("Invalid action type: %s", Action))
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(storageCmd)
+	storageCmd.Flags().StringVarP(&Action, "action", "a", UPLOAD_COMMAND, "Action type. Upload, upload, or etc.")
 	storageCmd.Flags().StringVarP(&Path, "path", "p", "", "Target file path.")
 	storageCmd.Flags().BoolVarP(&Verbose, "verbose", "v", false, "Show detail.")
 
@@ -93,4 +75,46 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// storageCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func upload(args []string) {
+	f, err := os.Stat(Path)
+	if err != nil {
+		fmt.Println("Invalid Path")
+		os.Exit(1)
+	}
+	fp, err := os.Open(Path)
+	if err != nil {
+		fmt.Println("Failed open")
+		os.Exit(1)
+	}
+	defer fp.Close()
+	buf := make([]byte, 1024)
+	for {
+		n, err := fp.Read(buf)
+		if n == 0 {
+			break
+		}
+		if err != nil {
+			fmt.Printf("Failed read: %s\n", err)
+			os.Exit(1)
+		}
+	}
+	ctx := context.Background()
+	conn := gstorage.NewGoogleStorageConnector(ctx, "GOOGLE_CLOUD_KEYFILE_JSON", "sodium-chalice-256606")
+	client, err := conn.NewClient()
+	if err != nil {
+		fmt.Printf("Failed create google api client: %s\n", err)
+	}
+	fm, _ := models.NewFile(f.Name(), 0, buf, "test-dir021900/"+f.Name(), time.Now(), time.Now(), "", "")
+	client.Upload(fm)
+
+	if Verbose {
+		pwd, _ := os.Getwd()
+		fmt.Printf("pwd: %s\npath: %s\nData:\n %s\n", pwd, Path, string(buf))
+	}
+}
+
+func download(args []string) {
+
 }

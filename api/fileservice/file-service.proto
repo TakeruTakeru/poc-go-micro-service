@@ -21,6 +21,12 @@ service FileService {
       get: "/v1/gstorage/files/{base64Id}"
     };
   };
+  rpc UploadGoogleStorageFile(GoogleStorageFileUploadRequest) returns (GoogleStorageFileUploadResponse) {
+    option (google.api.http) = {
+      post: "/v1/gstorage/files/upload"
+      body: "*"
+    };
+  };
 }
 
 message File {
@@ -35,26 +41,48 @@ message File {
     string desc = 8;
 }
 
+message Result {
+  bool ok = 1;
+  string code = 2;
+  string message = 3;
+}
+
+message Certification {
+  string user = 1;
+  string password = 2;
+}
+
 message GoogleDriveFileListRequest {
     string path = 1;
 }
 
 message GoogleDriveFileListResponse {
-    repeated File file = 1;
+    repeated string path = 1;
     google.protobuf.Timestamp requestAt = 2;
 }
 
 message GoogleStorageFileListRequest {
     string path = 1;
 }
+
 message GoogleStorageFileListResponse {
-    repeated File file = 1;
+    repeated string path = 1;
     google.protobuf.Timestamp requestAt = 2;
 }
 
 message GoogleStorageFileRequest {
   string base64Id = 1;
 }
+
 message GoogleStorageFileResponse {
   File file = 1;
+}
+
+message GoogleStorageFileUploadRequest {
+  File file = 1;
+  Certification cert = 2;
+}
+
+message GoogleStorageFileUploadResponse {
+  Result res = 1;
 }

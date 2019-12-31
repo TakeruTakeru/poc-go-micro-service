@@ -27,6 +27,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/huandu/xstrings v1.2.1 // indirect
 	github.com/imdario/mergo v0.3.8 // indirect
+	github.com/joho/godotenv v1.3.0
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
 	github.com/kr/pty v1.1.8 // indirect
 	github.com/lyft/protoc-gen-validate v0.1.0 // indirect

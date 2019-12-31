@@ -11,13 +11,13 @@ func GetFile() (f *models.FileModel, e error) {
 	return
 }
 
-func GetFileList() (li []*models.FileModel, e error) {
+func GetFileList() (li []string, e error) {
 	f, e := models.NewFile("FileName", 1024, []byte{}, "/takeru/private/", time.Now(), time.Now(), "takeru", "love this file")
 	if e != nil {
 		return nil, e
 	}
 	for _, _ = range []int{1, 2, 3} {
-		li = append(li, f)
+		li = append(li, f.GetPath())
 	}
 	return
 }
