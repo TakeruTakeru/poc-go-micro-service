@@ -16,7 +16,7 @@ var ROOT_PATH = fmt.Sprintf("%s/src/github.com/TakeruTakeru/%s", os.Getenv("GOPA
 func InitCommonEnv() (err error) {
 	err = godotenv.Load(ROOT_PATH + "/.env")
 	if err != nil {
-		logger.Panicf("Failed to load .env file")
+		logger.Errorf("Failed to load .env file")
 	}
 	logger.Printf("Initialize common environment.")
 	return
@@ -25,7 +25,7 @@ func InitCommonEnv() (err error) {
 func InitDevEnv() (err error) {
 	err = godotenv.Load(ROOT_PATH + "/configs/devconf/.env")
 	if err != nil {
-		logger.Panicf("Failed to load .env file")
+		logger.Errorf("Failed to load .env file")
 	}
 	logger.Printf("Initialize dev environment.")
 	return
@@ -34,7 +34,7 @@ func InitDevEnv() (err error) {
 func InitTestEnv() (err error) {
 	err = godotenv.Load(ROOT_PATH + "/configs/testconf/.env")
 	if err != nil {
-		logger.Panicf("Failed to load .env file")
+		logger.Errorf("Failed to load .env file")
 	}
 	logger.Printf("Initialize test environment")
 	return
@@ -43,7 +43,7 @@ func InitTestEnv() (err error) {
 func init() {
 	err := InitCommonEnv()
 	if err != nil {
-		logger.Panicf(err.Error())
+		logger.Errorf(err.Error())
 	}
 	var env string
 	env = os.Getenv("GOENV")
@@ -56,6 +56,6 @@ func init() {
 		err = InitDevEnv()
 	}
 	if err != nil {
-		logger.Panicf(err.Error())
+		logger.Errorf(err.Error())
 	}
 }
