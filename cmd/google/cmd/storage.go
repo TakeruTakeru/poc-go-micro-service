@@ -18,16 +18,19 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
+	"time"
+
+	_ "github.com/TakeruTakeru/poc-go-micro-service/configs"
 	"github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice/gstorage"
 	"github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice/models"
 	"github.com/spf13/cobra"
-	"os"
-	"time"
 )
 
 var (
 	Action  string
 	Path    string
+	Output  string
 	Verbose bool
 )
 
@@ -49,6 +52,9 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 1 {
+			panic(fmt.Errorf("Needs at least one args."))
+		}
 		switch Action {
 		case UPLOAD_COMMAND:
 			upload(args)
@@ -64,6 +70,7 @@ func init() {
 	rootCmd.AddCommand(storageCmd)
 	storageCmd.Flags().StringVarP(&Action, "action", "a", UPLOAD_COMMAND, "Action type. Upload, upload, or etc.")
 	storageCmd.Flags().StringVarP(&Path, "path", "p", "", "Target file path.")
+	storageCmd.Flags().StringVarP(&Output, "output", "o", "", "Output file path.")
 	storageCmd.Flags().BoolVarP(&Verbose, "verbose", "v", false, "Show detail.")
 
 	// Here you will define your flags and configuration settings.
@@ -105,6 +112,7 @@ func upload(args []string) {
 	client, err := conn.NewClient()
 	if err != nil {
 		fmt.Printf("Failed create google api client: %s\n", err)
+		os.Exit(1)
 	}
 	fm, _ := models.NewFile(f.Name(), 0, buf, "test-dir021900/"+f.Name(), time.Now(), time.Now(), "", "")
 	client.Upload(fm)
@@ -116,5 +124,26 @@ func upload(args []string) {
 }
 
 func download(args []string) {
-
+	fp, err := os.OpenFile(Output, os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Println("Failed open")
+		os.Exit(1)
+	}
+	ctx := context.Background()
+	conn := gstorage.NewGoogleStorageConnector(ctx, "GOOGLE_CLOUD_KEYFILE_JSON", "sodium-chalice-256606")
+	client, err := conn.NewClient()
+	if err != nil {
+		fmt.Printf("Failed create google api client: %s\n", err)
+		os.Exit(1)
+	}
+	fm, err := client.Download(args[0])
+	if err != nil {
+		fmt.Printf("Failed to download data. %v", err)
+		os.Exit(1)
+	}
+	_, err = fmt.Fprintf(fp, string(fm.GetData()))
+	if err != nil {
+		fmt.Printf("Failed to read data. `%s` :%v", string(fm.GetData()), err)
+		os.Exit(1)
+	}
 }

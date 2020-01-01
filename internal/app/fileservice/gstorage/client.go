@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	"strings"
 
@@ -103,7 +104,7 @@ func (gsc *GoogleStorageClient) Download(path string) (fm *models.FileModel, err
 	}
 	defer rc.Close()
 	data, err := ioutil.ReadAll(rc)
-	fm, _ = models.NewFile(attr.Name, int32(attr.Size), data, attr.Name, attr.Updated, attr.Created, attr.Owner, "")
+	fm, _ = models.NewFile(filepath.Base(fname), int32(attr.Size), data, filepath.Dir(attr.Name), attr.Updated, attr.Created, attr.Owner, "")
 	logger.Printf("Downloaded file '%s'", fname)
 	return
 }
@@ -164,7 +165,7 @@ func (gsc *GoogleStorageClient) GetFileInfo(path string) (fm *models.FileModel, 
 		logger.Errorf("Failed to GetFileInfo bucket: '%s', file: '%s' %s", bname, fname, err.Error())
 		return
 	}
-	fm, err = models.NewFile(attr.Name, int32(attr.Size), []byte{}, path, attr.Updated, attr.Created, attr.Owner, "")
+	fm, err = models.NewFile(filepath.Base(fname), int32(attr.Size), []byte{}, filepath.Dir(path), attr.Updated, attr.Created, attr.Owner, "")
 	logger.Printf("Get File Info file: '%s'", fname)
 	return
 }

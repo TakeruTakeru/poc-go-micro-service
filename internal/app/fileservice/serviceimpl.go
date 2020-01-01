@@ -53,7 +53,8 @@ func (fs *FileService) GetGoogleStorageFile(ctx context.Context, req *fileservic
 	if err != nil {
 		return
 	}
-	res = &fileservice.GoogleStorageFileResponse{File: fm.Model}
+	model := fm.Model
+	res = &fileservice.GoogleStorageFileResponse{File: model}
 	return
 }
 
@@ -87,6 +88,13 @@ func (fs *FileService) UploadGoogleStorageFile(ctx context.Context, req *fileser
 	_, err = client.Upload(fm)
 	if err != nil {
 		return
+	}
+	res = &fileservice.GoogleStorageFileUploadResponse{
+		Res: &fileservice.Result{
+			Ok:      true,
+			Code:    "200",
+			Message: "successfull",
+		},
 	}
 	return
 }

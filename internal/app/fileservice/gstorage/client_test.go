@@ -33,7 +33,7 @@ func TestCreateGoogleStorageClient_正常系(t *testing.T) {
 
 func TestCreateGoogleStorageClient_異常系(t *testing.T) {
 	ctx := context.Background()
-	conn := NewGoogleStorageConnector(ctx, "ERROR", "sodium-chalice-256606")
+	conn := NewGoogleStorageConnector(ctx, "ERR", "sodium-chalice-256606")
 	_, err := conn.NewClient()
 	if err == nil {
 		t.Errorf(unexpectedError(err.Error()))
