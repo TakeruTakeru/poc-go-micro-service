@@ -18,7 +18,9 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"time"
 
 	_ "github.com/TakeruTakeru/poc-go-micro-service/configs"
@@ -85,27 +87,9 @@ func init() {
 }
 
 func upload(args []string) {
-	f, err := os.Stat(Path)
+	file, err := ioutil.ReadFile(args[0])
 	if err != nil {
-		fmt.Println("Invalid Path")
-		os.Exit(1)
-	}
-	fp, err := os.Open(Path)
-	if err != nil {
-		fmt.Println("Failed open")
-		os.Exit(1)
-	}
-	defer fp.Close()
-	buf := make([]byte, 1024)
-	for {
-		n, err := fp.Read(buf)
-		if n == 0 {
-			break
-		}
-		if err != nil {
-			fmt.Printf("Failed read: %s\n", err)
-			os.Exit(1)
-		}
+		fmt.Errorf("Failed to Read file. %v", err)
 	}
 	ctx := context.Background()
 	conn := gstorage.NewGoogleStorageConnector(ctx, "GOOGLE_CLOUD_KEYFILE_JSON", "sodium-chalice-256606")
@@ -114,12 +98,12 @@ func upload(args []string) {
 		fmt.Printf("Failed create google api client: %s\n", err)
 		os.Exit(1)
 	}
-	fm, _ := models.NewFile(f.Name(), 0, buf, "test-dir021900/"+f.Name(), time.Now(), time.Now(), "", "")
+	fm, _ := models.NewFile(filepath.Base(Path), 0, file, filepath.Dir(Path), time.Now(), time.Now(), "", "")
 	client.Upload(fm)
 
 	if Verbose {
 		pwd, _ := os.Getwd()
-		fmt.Printf("pwd: %s\npath: %s\nData:\n %s\n", pwd, Path, string(buf))
+		fmt.Printf("pwd: %s\npath: %s\nData:\n %s\n", pwd, Path, string(file))
 	}
 }
 

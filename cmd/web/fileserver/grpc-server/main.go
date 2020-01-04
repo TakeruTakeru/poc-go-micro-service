@@ -9,10 +9,10 @@ import (
 	"time"
 
 	auth "github.com/TakeruTakeru/poc-go-micro-service/api/auth"
-	_ "github.com/TakeruTakeru/poc-go-micro-service/pkg/logger"
-	_ "github.com/TakeruTakeru/poc-go-micro-service/configs"
 	fileInterface "github.com/TakeruTakeru/poc-go-micro-service/api/fileservice"
+	_ "github.com/TakeruTakeru/poc-go-micro-service/configs"
 	fileService "github.com/TakeruTakeru/poc-go-micro-service/internal/app/fileservice"
+	_ "github.com/TakeruTakeru/poc-go-micro-service/pkg/logger"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_logrus "github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -24,7 +24,7 @@ import (
 )
 
 func main() {
-	listen, err := net.Listen("tcp", ":8080")
+	listen, err := net.Listen("tcp", ":5555")
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/golang/glog"
+	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -15,8 +16,8 @@ import (
 )
 
 var (
-	port     = flag.String("port", "5555", "listen port")
-	endpoint = flag.String("end_point", "localhost:8080", "endpoint of YourService")
+	port     = flag.String("port", "8080", "listen port")
+	endpoint = flag.String("end_point", "localhost:5555", "endpoint of YourService")
 )
 
 func run() error {
@@ -24,7 +25,7 @@ func run() error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	mux := runtime.NewServeMux()
+	mux := runtime.NewServeMux(runtime.WithForwardResponseOption(CORSFilter))
 	err := gw.RegisterFileServiceHandlerFromEndpoint(ctx, mux, *endpoint, []grpc.DialOption{grpc.WithInsecure()})
 	if err != nil {
 		return err
@@ -61,4 +62,9 @@ func ClientIAuthInterceptor() grpc.UnaryClientInterceptor {
 		}
 		return
 	}
+}
+
+func CORSFilter(ctx context.Context, w http.ResponseWriter, resp proto.Message) error {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	return nil
 }
